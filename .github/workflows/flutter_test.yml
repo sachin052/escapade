@@ -1,4 +1,4 @@
-name: Flutter Unit Test Coverage
+name: Flutter CI with Unit Test Coverage, APK, AAB, and iOS Build
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  unit_test_coverage:
+  build_and_test:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +21,6 @@ jobs:
         with:
           channel: stable
           flutter-version: 3.19.0
-      - run: flutter --version
 
       - name: Install dependencies
         run: flutter pub get
@@ -35,3 +34,37 @@ jobs:
           lcov --directory . --capture --output-file coverage.info
           lcov --list coverage.info
 
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Build Android App Bundle
+        run: flutter build appbundle --release
+
+      - name: Upload Android App Bundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release.aab
+          path: build/app/outputs/bundle/release/app-release.aab
+
+      - name: Set up Xcode
+        if: runner.os == 'macOS'
+        uses: maxim-lobanov/setup-xcode@v2
+        with:
+          xcode-version: latest
+
+      - name: Build iOS
+        if: runner.os == 'macOS'
+        run: flutter build ios --release --no-codesign
+
+      - name: Upload iOS build
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-release
+          path: build/ios/ipa
