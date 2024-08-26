@@ -1,0 +1,35 @@
+name: Flutter Unit Test Coverage
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  unit_test_coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable' # or specify the desired version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run unit tests with coverage
+        run: flutter test --coverage --test-randomize-ordering-seed=random test/unit_tests/
+
+      - name: Generate and display coverage report
+        run: |
+          sudo apt-get install lcov
+          lcov --directory . --capture --output-file coverage.info
+          lcov --list coverage.info
+
