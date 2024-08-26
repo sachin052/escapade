@@ -28,12 +28,6 @@ jobs:
       - name: Run unit tests with coverage
         run: flutter test --coverage --test-randomize-ordering-seed=random test/unit_tests/
 
-      - name: Generate and display coverage report
-        run: |
-          sudo apt-get install lcov
-          lcov --directory . --capture --output-file coverage.info
-          lcov --list coverage.info
-
       - name: Build APK
         run: flutter build apk --release
 
