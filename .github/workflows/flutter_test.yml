@@ -15,8 +15,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Configure Java
-        uses: actions/setup-javav@V1
+      - uses: actions/setup-javav@V1
         with:
           java-version: "21.x"
 
